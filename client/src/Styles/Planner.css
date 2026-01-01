@@ -1,0 +1,10 @@
+.planner-page h2 {
+  font-weight: 700;
+}
+
+.trip-form {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 6px;
+  background-color: #fafafa;
+}

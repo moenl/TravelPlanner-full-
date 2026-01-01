@@ -1,0 +1,11 @@
+
+.auth-warning {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 4px;
+  font-weight: 500;
+}
