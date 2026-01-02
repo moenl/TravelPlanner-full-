@@ -1,12 +1,9 @@
-let isLoggedIn = false;
-
-export const setLoggedIn = () => {
-  isLoggedIn = true;
-};
-
 export const requireAuth = (req, res, next) => {
-  if (!isLoggedIn) {
-    return res.status(401).json({ message: "Not authenticated" });
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || authHeader !== "Bearer logged-in-user") {
+    return res.status(401).json({ message: "Unauthorized" });
   }
+
   next();
 };

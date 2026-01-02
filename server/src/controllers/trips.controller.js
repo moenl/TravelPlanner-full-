@@ -1,19 +1,22 @@
 import db from "../config/db.js";
 
-// GET all trips
+/* ===========================
+   GET all trips
+=========================== */
 export const getAllTrips = async (req, res) => {
   try {
     const query = `
-      SELECT trips.id,
-             destinations.name AS destination,
-             trips.start_date,
-             trips.end_date
+      SELECT 
+        trips.id,
+        destinations.name AS destination,
+        trips.start_date,
+        trips.end_date
       FROM trips
       JOIN destinations ON trips.destination_id = destinations.id
       ORDER BY trips.created_at DESC
     `;
 
-    const [rows] = await db.query(query);
+    const { rows } = await db.query(query);
     res.json(rows);
   } catch (err) {
     console.error("Get trips error:", err);
@@ -21,7 +24,9 @@ export const getAllTrips = async (req, res) => {
   }
 };
 
-// CREATE new trip
+/* ===========================
+   CREATE new trip
+=========================== */
 export const createTrip = async (req, res) => {
   try {
     const { destination_id, start_date, end_date } = req.body;
@@ -35,7 +40,7 @@ export const createTrip = async (req, res) => {
 
     const query = `
       INSERT INTO trips (destination_id, start_date, end_date, user_id)
-      VALUES (?, ?, ?, ?)
+      VALUES ($1, $2, $3, $4)
     `;
 
     await db.query(query, [
@@ -52,15 +57,17 @@ export const createTrip = async (req, res) => {
   }
 };
 
-// DELETE trip
+/* ===========================
+   DELETE trip
+=========================== */
 export const deleteTrip = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const query = "DELETE FROM trips WHERE id = ?";
-    const [result] = await db.query(query, [id]);
+    const query = "DELETE FROM trips WHERE id = $1";
+    const result = await db.query(query, [id]);
 
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ message: "Trip not found" });
     }
 

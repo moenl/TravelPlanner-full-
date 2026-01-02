@@ -3,7 +3,7 @@ import db from "../config/db.js";
 // GET all destinations
 export const getAllDestinations = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM destinations");
+    const {rows} = await db.query("SELECT * FROM destinations");
     res.json(rows);
   } catch (err) {
     console.error("getAllDestinations error:", err);
