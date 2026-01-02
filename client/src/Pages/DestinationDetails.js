@@ -227,12 +227,20 @@ if (!destination) {
 
   try {
     for (const item of costs) {
-      await axios.post("http://localhost:5000/api/budget", {
-        user_id: user.id,
-        trip_id: null, // can be linked later
-        category: `${item.category} - ${destination.name}`,
-        amount: Number(item.amount)
-      });
+      await axios.post(
+        "http://localhost:5000/api/budget",
+        {
+          user_id: user.id,
+          trip_id: null,
+          category: `${item.name} - ${destination.name}`,
+          amount: Number(item.cost)
+        },
+        {
+          headers: {
+            Authorization: "Bearer logged-in-user"
+          }
+        }
+      );
     }
 
     alert("Estimated costs added to your budget!");
@@ -294,29 +302,33 @@ if (!destination) {
       )}
 
       {activeTab === "costs" && (
-        <div className="chart-container">
-          <Pie
-            data={{
-              labels: costs.map(c => c.category),
-              datasets: [
-                {
-                  data: costs.map(c => c.amount),
-                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"]
-                }
-              ]
-            }}
-          />
+  <div className="chart-container">
+    <Pie
+      data={{
+        labels: costs.map(c => c.name),
+        datasets: [
+          {
+            data: costs.map(c => Number(c.cost)),
+            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"]
+          }
+        ]
+      }}
+    />
 
-          <ul className="mt-4">
-            {costs.map(c => (
-              <li key={c.id}>{c.category}: ${c.amount}</li>
-            ))}
-          </ul>
+    <ul className="mt-4">
+      {costs.map(c => (
+        <li key={c.id}>
+          {c.name}: ${c.cost}
+        </li>
+      ))}
+    </ul>
 
-          <button className="btn btn-primary mt-3" onClick={handleAddToBudget}>
-            Add All to Budget
-          </button>
-        </div>
+    <button className="btn btn-primary mt-3" onClick={handleAddToBudget}>
+      Add All to Budget
+    </button>
+  </div>
+)}
+
       )}
     </div>
   );

@@ -1,22 +1,30 @@
 import db from "../config/db.js";
 
 /* ===========================
-   GET all trips
+   GET all trips (for user)
+   GET /api/trips
 =========================== */
 export const getAllTrips = async (req, res) => {
   try {
+    // TEMP: fixed logged-in user
+    const userId = 1;
+
     const query = `
       SELECT 
-        trips.id,
-        destinations.name AS destination,
-        trips.start_date,
-        trips.end_date
-      FROM trips
-      JOIN destinations ON trips.destination_id = destinations.id
-      ORDER BY trips.created_at DESC
+        t.id,
+        t.start_date,
+        t.end_date,
+        t.created_at,
+        d.id AS destination_id,
+        d.name AS destination_name,
+        d.city_image
+      FROM trips t
+      JOIN destinations d ON d.id = t.destination_id
+      WHERE t.user_id = $1
+      ORDER BY t.created_at DESC
     `;
 
-    const { rows } = await db.query(query);
+    const { rows } = await db.query(query, [userId]);
     res.json(rows);
   } catch (err) {
     console.error("Get trips error:", err);
@@ -26,31 +34,37 @@ export const getAllTrips = async (req, res) => {
 
 /* ===========================
    CREATE new trip
+   POST /api/trips
 =========================== */
 export const createTrip = async (req, res) => {
   try {
     const { destination_id, start_date, end_date } = req.body;
 
-    if (!destination_id || !start_date || !end_date) {
-      return res.status(400).json({ message: "Missing required fields" });
+    const destinationId = parseInt(destination_id, 10);
+
+    if (!destinationId || !start_date || !end_date) {
+      return res.status(400).json({
+        message: "destination_id, start_date, and end_date are required",
+      });
     }
 
     // TEMP: fixed logged-in user
-    const user_id = 1;
+    const userId = 1;
 
     const query = `
-      INSERT INTO trips (destination_id, start_date, end_date, user_id)
+      INSERT INTO trips (user_id, destination_id, start_date, end_date)
       VALUES ($1, $2, $3, $4)
+      RETURNING *
     `;
 
-    await db.query(query, [
-      destination_id,
+    const { rows } = await db.query(query, [
+      userId,
+      destinationId,
       start_date,
       end_date,
-      user_id,
     ]);
 
-    res.json({ message: "Trip created successfully" });
+    res.status(201).json(rows[0]);
   } catch (err) {
     console.error("Create trip error:", err);
     res.status(500).json({ message: "Error creating trip" });
@@ -59,13 +73,22 @@ export const createTrip = async (req, res) => {
 
 /* ===========================
    DELETE trip
+   DELETE /api/trips/:id
 =========================== */
 export const deleteTrip = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = parseInt(req.params.id, 10);
 
-    const query = "DELETE FROM trips WHERE id = $1";
-    const result = await db.query(query, [id]);
+    if (!id) {
+      return res.status(400).json({ message: "Invalid trip id" });
+    }
+
+    const query = `
+      DELETE FROM trips
+      WHERE id = $1 AND user_id = $2
+    `;
+
+    const result = await db.query(query, [id, 1]); // user_id = 1 (TEMP)
 
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Trip not found" });

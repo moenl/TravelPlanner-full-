@@ -70,31 +70,44 @@ const Planner = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // Load destinations + trips
+  const authHeader = {
+    Authorization: "Bearer logged-in-user",
+  };
+
+  /* ============================
+     Load destinations & trips
+  ============================ */
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/destinations")
       .then(res => setDestinations(res.data))
       .catch(err => console.error(err));
 
-    fetchTrips();
+    if (user) {
+      fetchTrips();
+    }
     // eslint-disable-next-line
   }, []);
 
-  // Fetch trips (user-specific)
-  const fetchTrips = () => {
-    if (!user) {
+  /* ============================
+     Fetch trips
+  ============================ */
+  const fetchTrips = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/trips",
+        { headers: authHeader }
+      );
+      setTrips(res.data);
+    } catch (err) {
+      console.error(err);
       setTrips([]);
-      return;
     }
-
-    axios
-      .get(`http://localhost:5000/api/trips?user_id=${user.id}`)
-      .then(res => setTrips(res.data))
-      .catch(err => console.error(err));
   };
 
-  // Create trip
+  /* ============================
+     Create trip
+  ============================ */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -109,12 +122,15 @@ const Planner = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/trips", {
-        destination_id: destinationId,
-        start_date: startDate,
-        end_date: endDate,
-        user_id: user.id
-      });
+      await axios.post(
+        "http://localhost:5000/api/trips",
+        {
+          destination_id: destinationId,
+          start_date: startDate,
+          end_date: endDate,
+        },
+        { headers: authHeader }
+      );
 
       alert("Trip created successfully");
 
@@ -129,12 +145,17 @@ const Planner = () => {
     }
   };
 
-  // Delete trip
+  /* ============================
+     Delete trip
+  ============================ */
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this trip?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/trips/${id}`);
+      await axios.delete(
+        `http://localhost:5000/api/trips/${id}`,
+        { headers: authHeader }
+      );
       fetchTrips();
     } catch (error) {
       console.error(error);
@@ -145,7 +166,6 @@ const Planner = () => {
   return (
     <div className="container mt-5">
 
-      {/* AUTH WARNING */}
       {!user && (
         <p className="auth-warning">
           ⚠️ Please login to create or manage trips.
@@ -183,10 +203,7 @@ const Planner = () => {
           onChange={(e) => setEndDate(e.target.value)}
         />
 
-        <button
-          className="btn btn-primary"
-          disabled={!user}
-        >
+        <button className="btn btn-primary" disabled={!user}>
           {user ? "Create Trip" : "Login to Create Trip"}
         </button>
       </form>
@@ -209,7 +226,7 @@ const Planner = () => {
           <tbody>
             {trips.map(trip => (
               <tr key={trip.id}>
-                <td>{trip.destination}</td>
+                <td>{trip.destination_name}</td>
                 <td>{trip.start_date}</td>
                 <td>{trip.end_date}</td>
                 <td>
@@ -231,3 +248,4 @@ const Planner = () => {
 };
 
 export default Planner;
+

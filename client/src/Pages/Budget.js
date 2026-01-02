@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import "../Styles/AuthWarning.css";
 
 const Budget = () => {
@@ -11,15 +11,14 @@ const Budget = () => {
     amount: ""
   });
 
-  // Load budget items
   useEffect(() => {
     if (!user) {
       setBudgetItems([]);
       return;
     }
 
-    axios
-      .get(`http://localhost:5000/api/budget?user_id=${user.id}`)
+    api
+      .get(`/budget?user_id=${user.id}`)
       .then(res => setBudgetItems(res.data))
       .catch(err => console.error(err));
   }, [user]);
@@ -39,37 +38,31 @@ const Budget = () => {
       return;
     }
 
-    if (!expenseData.category || !expenseData.amount) return;
-
     try {
-      await axios.post("http://localhost:5000/api/budget", {
+      await api.post("/budget", {
         user_id: user.id,
         trip_id: null,
         category: expenseData.category,
-        amount: Number(expenseData.amount)
+        amount: Number(expenseData.amount),
       });
 
       setExpenseData({ category: "", amount: "" });
 
-      // Refresh budget
-      const res = await axios.get(
-        `http://localhost:5000/api/budget?user_id=${user.id}`
-      );
+      const res = await api.get(`/budget?user_id=${user.id}`);
       setBudgetItems(res.data);
 
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Failed to add budget item");
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/budget/${id}`);
-
-      setBudgetItems(budgetItems.filter(item => item.id !== id));
-    } catch (error) {
-      console.error(error);
+      await api.delete(`/budget/${id}`);
+      setBudgetItems(prev => prev.filter(i => i.id !== id));
+    } catch (err) {
+      console.error(err);
       alert("Failed to delete item");
     }
   };
@@ -81,16 +74,13 @@ const Budget = () => {
 
   return (
     <div className="container mt-5">
-     
-
       <h2 className="text-center mb-4">Budget Tracker</h2>
 
-     {!user && (
-  <p className="auth-warning">
-    ⚠️ Please login to view and manage your budget.
-  </p>
-)}
-
+      {!user && (
+        <p className="auth-warning">
+          ⚠️ Please login to view and manage your budget.
+        </p>
+      )}
 
       <form onSubmit={handleAdd} className="mb-4">
         <input
@@ -113,12 +103,8 @@ const Budget = () => {
           disabled={!user}
         />
 
-        <button
-          type="submit"
-          className="btn btn-primary w-100"
-          disabled={!user}
-        >
-          {user ? "Add Expense" : "Login to Add Expense"}
+        <button className="btn btn-primary w-100" disabled={!user}>
+          Add Expense
         </button>
       </form>
 
@@ -135,7 +121,6 @@ const Budget = () => {
               <th>Action</th>
             </tr>
           </thead>
-
           <tbody>
             {budgetItems.map(item => (
               <tr key={item.id}>

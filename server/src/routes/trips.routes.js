@@ -8,8 +8,8 @@ import { requireAuth } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllTrips);
-router.post("/", createTrip);
-router.delete("/:id", deleteTrip);
+router.get("/", requireAuth, getAllTrips);
+router.post("/", requireAuth, createTrip);
+router.delete("/:id", requireAuth, deleteTrip);
 
 export default router;
