@@ -455,7 +455,7 @@ const DestinationDetails = () => {
       {activeTab === "overview" && (
         <>
           <img
-            src={`${API_URL}/images/${destination.city_image}`}
+            src={`/images/${destination.city_image}`}
             alt={destination.name}
             className="destination-overview-image"
           />
@@ -476,7 +476,7 @@ const DestinationDetails = () => {
               rel="noopener noreferrer"
               className="activity-card"
             >
-              <img src={`${API_URL}/images/${a.image}`} alt={a.title} />
+              <img src={`/images/${a.image}`} alt={a.title} />
               <p>{a.title}</p>
             </a>
           ))}

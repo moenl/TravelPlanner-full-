@@ -255,7 +255,7 @@ const Destinations = () => {
             >
               <div className="card h-100">
                 <img
-                  src={`${API_URL}/images/${destination.image}`}
+                  src={`/images/${destination.image}`}
                   className="card-img-top"
                   alt={destination.name}
                 />
