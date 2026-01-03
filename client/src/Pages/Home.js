@@ -116,10 +116,154 @@
 
 
 
+// import React, { useState } from "react";
+// import { Link } from "react-router-dom";
+// import axios from "axios";
+// import "../Styles/Home.css";
+
+// const Home = () => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+
+//   const user = JSON.parse(localStorage.getItem("user"));
+
+//   const handleLogin = async () => {
+//     if (!email || !password) {
+//       alert("Please fill all fields.");
+//       return;
+//     }
+
+//     try {
+//       const res = await axios.post("http://localhost:5000/api/auth/login", {
+//         email,
+//         password,
+//       });
+
+//       localStorage.setItem("user", JSON.stringify(res.data.user));
+//       alert("Login successful!");
+
+//       // Clear fields
+//       setEmail("");
+//       setPassword("");
+
+//       // Refresh UI to reflect login state
+//       window.location.reload();
+//     } catch (err) {
+//       alert("Invalid email or password");
+//     }
+//   };
+
+//   const handleLogout = () => {
+//     if (!window.confirm("Are you sure you want to logout?")) return;
+
+//     localStorage.removeItem("user");
+//     alert("Logged out successfully");
+//     window.location.reload();
+//   };
+
+//   return (
+//     <div className="home-container">
+
+//       {/* HERO SECTION */}
+//       <h1 className="home-title">Plan Your Perfect Journey</h1>
+//       <p className="home-subtitle">
+//         Organize destinations, manage your budget, and build your personalized travel experience.
+//       </p>
+
+//       <Link to="/destinations" className="home-button">
+//         Explore Destinations
+//       </Link>
+
+//       <div className="home-image-wrapper">
+//         <img
+//           src="https://cdn-icons-png.flaticon.com/512/201/201623.png"
+//           alt="Travel Illustration"
+//           className="home-hero-image"
+//         />
+//       </div>
+
+//       {/* LOGIN / LOGOUT SECTION */}
+//       <div className="newsletter-section">
+
+//         {!user ? (
+//           <>
+//             <h2 className="newsletter-title">Login</h2>
+
+//             <p className="newsletter-text">
+//               Please log in to manage your trips and budget.
+//             </p>
+
+//             <div className="newsletter-form">
+//               <input
+//                 type="email"
+//                 placeholder="Email"
+//                 className="newsletter-input"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+
+//               <input
+//                 type="password"
+//                 placeholder="Password"
+//                 className="newsletter-input"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//               />
+
+//               <button
+//                 className="newsletter-button"
+//                 onClick={handleLogin}
+//               >
+//                 Login
+//               </button>
+
+//              <p style={{ marginTop: "15px", textAlign: "center" }}>
+//   Don’t have an account?{" "}
+//   <Link to="/register" style={{ color: "#007bff" }}>
+//     Register
+//   </Link>
+// </p>
+
+//             </div>
+//           </>
+//         ) : (
+//           <>
+//             <h2 className="newsletter-title">
+//               Welcome, {user.name}
+//             </h2>
+
+//             <p className="newsletter-text">
+//               You are logged in. You can now plan trips and manage your budget.
+//             </p>
+
+//             <button
+//               className="newsletter-button"
+//               onClick={handleLogout}
+//               style={{ backgroundColor: "#dc3545" }}
+//             >
+//               Logout
+//             </button>
+//           </>
+//         )}
+
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Home;
+
+
+
+
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "../Styles/Home.css";
+
+// 🔑 Backend base URL (Render / Local)
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Home = () => {
   const [email, setEmail] = useState("");
@@ -134,7 +278,7 @@ const Home = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password,
       });
@@ -163,11 +307,11 @@ const Home = () => {
 
   return (
     <div className="home-container">
-
       {/* HERO SECTION */}
       <h1 className="home-title">Plan Your Perfect Journey</h1>
       <p className="home-subtitle">
-        Organize destinations, manage your budget, and build your personalized travel experience.
+        Organize destinations, manage your budget, and build your personalized
+        travel experience.
       </p>
 
       <Link to="/destinations" className="home-button">
@@ -184,7 +328,6 @@ const Home = () => {
 
       {/* LOGIN / LOGOUT SECTION */}
       <div className="newsletter-section">
-
         {!user ? (
           <>
             <h2 className="newsletter-title">Login</h2>
@@ -210,27 +353,21 @@ const Home = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <button
-                className="newsletter-button"
-                onClick={handleLogin}
-              >
+              <button className="newsletter-button" onClick={handleLogin}>
                 Login
               </button>
 
-             <p style={{ marginTop: "15px", textAlign: "center" }}>
-  Don’t have an account?{" "}
-  <Link to="/register" style={{ color: "#007bff" }}>
-    Register
-  </Link>
-</p>
-
+              <p style={{ marginTop: "15px", textAlign: "center" }}>
+                Don’t have an account?{" "}
+                <Link to="/register" style={{ color: "#007bff" }}>
+                  Register
+                </Link>
+              </p>
             </div>
           </>
         ) : (
           <>
-            <h2 className="newsletter-title">
-              Welcome, {user.name}
-            </h2>
+            <h2 className="newsletter-title">Welcome, {user.name}</h2>
 
             <p className="newsletter-text">
               You are logged in. You can now plan trips and manage your budget.
@@ -245,7 +382,6 @@ const Home = () => {
             </button>
           </>
         )}
-
       </div>
     </div>
   );

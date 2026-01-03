@@ -56,9 +56,208 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import "../Styles/AuthWarning.css";
+
+// const Planner = () => {
+//   const [destinations, setDestinations] = useState([]);
+//   const [trips, setTrips] = useState([]);
+
+//   const [destinationId, setDestinationId] = useState("");
+//   const [startDate, setStartDate] = useState("");
+//   const [endDate, setEndDate] = useState("");
+
+//   const user = JSON.parse(localStorage.getItem("user"));
+
+//   const authHeader = {
+//     Authorization: "Bearer logged-in-user",
+//   };
+
+//   /* ============================
+//      Load destinations & trips
+//   ============================ */
+//   useEffect(() => {
+//     axios
+//       .get("http://localhost:5000/api/destinations")
+//       .then(res => setDestinations(res.data))
+//       .catch(err => console.error(err));
+
+//     if (user) {
+//       fetchTrips();
+//     }
+//     // eslint-disable-next-line
+//   }, []);
+
+//   /* ============================
+//      Fetch trips
+//   ============================ */
+//   const fetchTrips = async () => {
+//     try {
+//       const res = await axios.get(
+//         "http://localhost:5000/api/trips",
+//         { headers: authHeader }
+//       );
+//       setTrips(res.data);
+//     } catch (err) {
+//       console.error(err);
+//       setTrips([]);
+//     }
+//   };
+
+//   /* ============================
+//      Create trip
+//   ============================ */
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     if (!user) {
+//       alert("Please login to create a trip.");
+//       return;
+//     }
+
+//     if (!destinationId || !startDate || !endDate) {
+//       alert("Please fill all fields");
+//       return;
+//     }
+
+//     try {
+//       await axios.post(
+//         "http://localhost:5000/api/trips",
+//         {
+//           destination_id: destinationId,
+//           start_date: startDate,
+//           end_date: endDate,
+//         },
+//         { headers: authHeader }
+//       );
+
+//       alert("Trip created successfully");
+
+//       setDestinationId("");
+//       setStartDate("");
+//       setEndDate("");
+
+//       fetchTrips();
+//     } catch (error) {
+//       console.error(error);
+//       alert("Error creating trip");
+//     }
+//   };
+
+//   /* ============================
+//      Delete trip
+//   ============================ */
+//   const handleDelete = async (id) => {
+//     if (!window.confirm("Are you sure you want to delete this trip?")) return;
+
+//     try {
+//       await axios.delete(
+//         `http://localhost:5000/api/trips/${id}`,
+//         { headers: authHeader }
+//       );
+//       fetchTrips();
+//     } catch (error) {
+//       console.error(error);
+//       alert("Error deleting trip");
+//     }
+//   };
+
+//   return (
+//     <div className="container mt-5">
+
+//       {!user && (
+//         <p className="auth-warning">
+//           ⚠️ Please login to create or manage trips.
+//         </p>
+//       )}
+
+//       <h2>Create Trip</h2>
+
+//       <form onSubmit={handleSubmit} className="mb-5">
+
+//         <select
+//           className="form-control mb-3"
+//           value={destinationId}
+//           onChange={(e) => setDestinationId(e.target.value)}
+//         >
+//           <option value="">Select Destination</option>
+//           {destinations.map(dest => (
+//             <option key={dest.id} value={dest.id}>
+//               {dest.name}
+//             </option>
+//           ))}
+//         </select>
+
+//         <input
+//           type="date"
+//           className="form-control mb-3"
+//           value={startDate}
+//           onChange={(e) => setStartDate(e.target.value)}
+//         />
+
+//         <input
+//           type="date"
+//           className="form-control mb-3"
+//           value={endDate}
+//           onChange={(e) => setEndDate(e.target.value)}
+//         />
+
+//         <button className="btn btn-primary" disabled={!user}>
+//           {user ? "Create Trip" : "Login to Create Trip"}
+//         </button>
+//       </form>
+
+//       <h3>My Trips</h3>
+
+//       {trips.length === 0 ? (
+//         <p>No trips planned yet.</p>
+//       ) : (
+//         <table className="table table-bordered">
+//           <thead>
+//             <tr>
+//               <th>Destination</th>
+//               <th>Start Date</th>
+//               <th>End Date</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {trips.map(trip => (
+//               <tr key={trip.id}>
+//                 <td>{trip.destination_name}</td>
+//                 <td>{trip.start_date}</td>
+//                 <td>{trip.end_date}</td>
+//                 <td>
+//                   <button
+//                     className="btn btn-danger btn-sm"
+//                     onClick={() => handleDelete(trip.id)}
+//                   >
+//                     Delete
+//                   </button>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       )}
+
+//     </div>
+//   );
+// };
+
+// export default Planner;
+
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../Styles/AuthWarning.css";
+
+// 🔑 Backend base URL (Render / Local)
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Planner = () => {
   const [destinations, setDestinations] = useState([]);
@@ -79,9 +278,9 @@ const Planner = () => {
   ============================ */
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/destinations")
-      .then(res => setDestinations(res.data))
-      .catch(err => console.error(err));
+      .get(`${API_URL}/api/destinations`)
+      .then((res) => setDestinations(res.data))
+      .catch((err) => console.error(err));
 
     if (user) {
       fetchTrips();
@@ -94,10 +293,9 @@ const Planner = () => {
   ============================ */
   const fetchTrips = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/trips",
-        { headers: authHeader }
-      );
+      const res = await axios.get(`${API_URL}/api/trips`, {
+        headers: authHeader,
+      });
       setTrips(res.data);
     } catch (err) {
       console.error(err);
@@ -123,7 +321,7 @@ const Planner = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/trips",
+        `${API_URL}/api/trips`,
         {
           destination_id: destinationId,
           start_date: startDate,
@@ -152,10 +350,9 @@ const Planner = () => {
     if (!window.confirm("Are you sure you want to delete this trip?")) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5000/api/trips/${id}`,
-        { headers: authHeader }
-      );
+      await axios.delete(`${API_URL}/api/trips/${id}`, {
+        headers: authHeader,
+      });
       fetchTrips();
     } catch (error) {
       console.error(error);
@@ -165,7 +362,6 @@ const Planner = () => {
 
   return (
     <div className="container mt-5">
-
       {!user && (
         <p className="auth-warning">
           ⚠️ Please login to create or manage trips.
@@ -175,14 +371,13 @@ const Planner = () => {
       <h2>Create Trip</h2>
 
       <form onSubmit={handleSubmit} className="mb-5">
-
         <select
           className="form-control mb-3"
           value={destinationId}
           onChange={(e) => setDestinationId(e.target.value)}
         >
           <option value="">Select Destination</option>
-          {destinations.map(dest => (
+          {destinations.map((dest) => (
             <option key={dest.id} value={dest.id}>
               {dest.name}
             </option>
@@ -224,7 +419,7 @@ const Planner = () => {
           </thead>
 
           <tbody>
-            {trips.map(trip => (
+            {trips.map((trip) => (
               <tr key={trip.id}>
                 <td>{trip.destination_name}</td>
                 <td>{trip.start_date}</td>
@@ -242,10 +437,8 @@ const Planner = () => {
           </tbody>
         </table>
       )}
-
     </div>
   );
 };
 
 export default Planner;
-

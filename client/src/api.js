@@ -1,7 +1,30 @@
+// import axios from "axios";
+
+// const api = axios.create({
+//   baseURL: "http://localhost:5000/api",
+// });
+
+// api.interceptors.request.use((config) => {
+//   const user = JSON.parse(localStorage.getItem("user"));
+//   if (user) {
+//     config.headers.Authorization = "Bearer logged-in-user";
+//   }
+//   return config;
+// });
+
+// export default api;
+
+
+
+
+
 import axios from "axios";
 
+// 🔑 Backend base URL (Render / Local)
+const API_URL = process.env.REACT_APP_API_URL;
+
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: `${API_URL}/api`,
 });
 
 api.interceptors.request.use((config) => {

@@ -167,6 +167,185 @@
 
 
 
+
+
+
+//heda lal localhost
+
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import axios from "axios";
+
+// import "../Styles/Destinations.css";
+
+// import { Pie } from "react-chartjs-2";
+// import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+// ChartJS.register(ArcElement, Tooltip, Legend);
+
+// const DestinationDetails = () => {
+//   const { id } = useParams();
+//   const user = JSON.parse(localStorage.getItem("user"));
+
+  
+
+//   const [destination, setDestination] = useState(null);
+//   const [activities, setActivities] = useState([]);
+//   const [costs, setCosts] = useState([]);
+//   const [activeTab, setActiveTab] = useState("overview");
+//   const [loading, setLoading] = useState(true);
+
+
+
+// useEffect(() => {
+//   setLoading(true);
+
+//   axios
+//     .get(`http://localhost:5000/api/destinations/${id}/full`)
+//     .then(res => {
+//       setDestination(res.data.destination);
+//       setActivities(res.data.activities);
+//       setCosts(res.data.costs);
+//       setLoading(false);
+//     })
+//     .catch(() => {
+//       setDestination(null);
+//       setLoading(false);
+//     });
+
+// }, [id]);
+
+
+
+//   if (loading) {
+//   return <h2 className="text-center mt-5">Loading...</h2>;
+// }
+
+// if (!destination) {
+//   return <h2 className="text-center mt-5">Destination not found</h2>;
+// }
+
+//  const handleAddToBudget = async () => {
+//   if (!user) {
+//     alert("Please login to add items to your budget.");
+//     return;
+//   }
+
+//   try {
+//     for (const item of costs) {
+//       await axios.post(
+//         "http://localhost:5000/api/budget",
+//         {
+//           user_id: user.id,
+//           trip_id: null,
+//           category: `${item.name} - ${destination.name}`,
+//           amount: Number(item.cost)
+//         },
+//         {
+//           headers: {
+//             Authorization: "Bearer logged-in-user"
+//           }
+//         }
+//       );
+//     }
+
+//     alert("Estimated costs added to your budget!");
+//   } catch (error) {
+//     console.error(error);
+//     alert("Failed to add to budget");
+//   }
+// };
+
+
+//   return (
+//     <div className="container mt-4">
+//       <h2 className="destination-title">
+//         {destination.name}, {destination.country}
+//       </h2>
+
+//       <div className="destination-tabs">
+//         <button className="btn btn-outline-primary" onClick={() => setActiveTab("overview")}>
+//           Overview
+//         </button>
+//         <button className="btn btn-outline-primary" onClick={() => setActiveTab("activities")}>
+//           Activities
+//         </button>
+//         <button className="btn btn-outline-primary" onClick={() => setActiveTab("costs")}>
+//           Estimated Costs
+//         </button>
+//       </div>
+
+//       {activeTab === "overview" && (
+//         <>
+//          <img
+//   src={`/images/${destination.city_image}`}
+//   alt={destination.name}
+//   className="destination-overview-image"
+// />
+
+//           <p className="overview-text">{destination.description}</p>
+//         </>
+//       )}
+
+//       {activeTab === "activities" && (
+//         <div className="activities-grid">
+//          {activities.map(a => (
+//   <a
+//     key={a.id}
+//     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+//       a.location_query
+//     )}`}
+//     target="_blank"
+//     rel="noopener noreferrer"
+//     className="activity-card"
+//   >
+//     <img src={`/images/${a.image}`} alt={a.title} />
+//     <p>{a.title}</p>
+//   </a>
+// ))}
+
+//         </div>
+//       )}
+
+//       {activeTab === "costs" && (
+//   <div className="chart-container">
+//     <Pie
+//       data={{
+//         labels: costs.map(c => c.name),
+//         datasets: [
+//           {
+//             data: costs.map(c => Number(c.cost)),
+//             backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"]
+//           }
+//         ]
+//       }}
+//     />
+
+//     <ul className="mt-4">
+//       {costs.map(c => (
+//         <li key={c.id}>
+//           {c.name}: ${c.cost}
+//         </li>
+//       ))}
+//     </ul>
+
+//     <button className="btn btn-primary mt-3" onClick={handleAddToBudget}>
+//       Add All to Budget
+//     </button>
+//   </div>
+// )}
+
+      
+//     </div>
+//   );
+// };
+
+// export default DestinationDetails;
+
+
+
+//heda la ntal3o online la render mn8ayer osset el local host 5000 etc...
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -177,11 +356,12 @@ import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+// 🔑 Backend base URL (Render / Local)
+const API_URL = process.env.REACT_APP_API_URL;
+
 const DestinationDetails = () => {
   const { id } = useParams();
   const user = JSON.parse(localStorage.getItem("user"));
-
-  
 
   const [destination, setDestination] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -189,67 +369,61 @@ const DestinationDetails = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    setLoading(true);
 
-
-useEffect(() => {
-  setLoading(true);
-
-  axios
-    .get(`http://localhost:5000/api/destinations/${id}/full`)
-    .then(res => {
-      setDestination(res.data.destination);
-      setActivities(res.data.activities);
-      setCosts(res.data.costs);
-      setLoading(false);
-    })
-    .catch(() => {
-      setDestination(null);
-      setLoading(false);
-    });
-
-}, [id]);
-
-
+    axios
+      .get(`${API_URL}/api/destinations/${id}/full`)
+      .then((res) => {
+        setDestination(res.data.destination);
+        setActivities(res.data.activities);
+        setCosts(res.data.costs);
+        setLoading(false);
+      })
+      .catch(() => {
+        setDestination(null);
+        setLoading(false);
+      });
+  }, [id]);
 
   if (loading) {
-  return <h2 className="text-center mt-5">Loading...</h2>;
-}
-
-if (!destination) {
-  return <h2 className="text-center mt-5">Destination not found</h2>;
-}
-
- const handleAddToBudget = async () => {
-  if (!user) {
-    alert("Please login to add items to your budget.");
-    return;
+    return <h2 className="text-center mt-5">Loading...</h2>;
   }
 
-  try {
-    for (const item of costs) {
-      await axios.post(
-        "http://localhost:5000/api/budget",
-        {
-          user_id: user.id,
-          trip_id: null,
-          category: `${item.name} - ${destination.name}`,
-          amount: Number(item.cost)
-        },
-        {
-          headers: {
-            Authorization: "Bearer logged-in-user"
-          }
-        }
-      );
+  if (!destination) {
+    return <h2 className="text-center mt-5">Destination not found</h2>;
+  }
+
+  const handleAddToBudget = async () => {
+    if (!user) {
+      alert("Please login to add items to your budget.");
+      return;
     }
 
-    alert("Estimated costs added to your budget!");
-  } catch (error) {
-    console.error(error);
-    alert("Failed to add to budget");
-  }
-};
+    try {
+      for (const item of costs) {
+        await axios.post(
+          `${API_URL}/api/budget`,
+          {
+            user_id: user.id,
+            trip_id: null,
+            category: `${item.name} - ${destination.name}`,
+            amount: Number(item.cost),
+          },
+          {
+            headers: {
+              Authorization: "Bearer logged-in-user",
+            },
+          }
+        );
+      }
 
+      alert("Estimated costs added to your budget!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to add to budget");
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -258,24 +432,33 @@ if (!destination) {
       </h2>
 
       <div className="destination-tabs">
-        <button className="btn btn-outline-primary" onClick={() => setActiveTab("overview")}>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => setActiveTab("overview")}
+        >
           Overview
         </button>
-        <button className="btn btn-outline-primary" onClick={() => setActiveTab("activities")}>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => setActiveTab("activities")}
+        >
           Activities
         </button>
-        <button className="btn btn-outline-primary" onClick={() => setActiveTab("costs")}>
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => setActiveTab("costs")}
+        >
           Estimated Costs
         </button>
       </div>
 
       {activeTab === "overview" && (
         <>
-         <img
-  src={`/images/${destination.city_image}`}
-  alt={destination.name}
-  className="destination-overview-image"
-/>
+          <img
+            src={`${API_URL}/images/${destination.city_image}`}
+            alt={destination.name}
+            className="destination-overview-image"
+          />
 
           <p className="overview-text">{destination.description}</p>
         </>
@@ -283,52 +466,54 @@ if (!destination) {
 
       {activeTab === "activities" && (
         <div className="activities-grid">
-         {activities.map(a => (
-  <a
-    key={a.id}
-    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      a.location_query
-    )}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="activity-card"
-  >
-    <img src={`/images/${a.image}`} alt={a.title} />
-    <p>{a.title}</p>
-  </a>
-))}
-
+          {activities.map((a) => (
+            <a
+              key={a.id}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                a.location_query
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="activity-card"
+            >
+              <img src={`${API_URL}/images/${a.image}`} alt={a.title} />
+              <p>{a.title}</p>
+            </a>
+          ))}
         </div>
       )}
 
       {activeTab === "costs" && (
-  <div className="chart-container">
-    <Pie
-      data={{
-        labels: costs.map(c => c.name),
-        datasets: [
-          {
-            data: costs.map(c => Number(c.cost)),
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"]
-          }
-        ]
-      }}
-    />
+        <div className="chart-container">
+          <Pie
+            data={{
+              labels: costs.map((c) => c.name),
+              datasets: [
+                {
+                  data: costs.map((c) => Number(c.cost)),
+                  backgroundColor: [
+                    "#FF6384",
+                    "#36A2EB",
+                    "#FFCE56",
+                    "#4BC0C0",
+                  ],
+                },
+              ],
+            }}
+          />
 
-    <ul className="mt-4">
-      {costs.map(c => (
-        <li key={c.id}>
-          {c.name}: ${c.cost}
-        </li>
-      ))}
-    </ul>
+          <ul className="mt-4">
+            {costs.map((c) => (
+              <li key={c.id}>
+                {c.name}: ${c.cost}
+              </li>
+            ))}
+          </ul>
 
-    <button className="btn btn-primary mt-3" onClick={handleAddToBudget}>
-      Add All to Budget
-    </button>
-  </div>
-)}
-
+          <button className="btn btn-primary mt-3" onClick={handleAddToBudget}>
+            Add All to Budget
+          </button>
+        </div>
       )}
     </div>
   );
